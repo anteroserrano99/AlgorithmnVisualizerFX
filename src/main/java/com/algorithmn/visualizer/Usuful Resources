@@ -1,0 +1,10 @@
+//THIS ITERATION CREATE A 16X16 GRID
+            for (int y = 0 ; y < height ; y++) {
+                for (int x = 0 ; x < width; x++) {
+
+                    int columnIndex = (y * height);
+                    double val = 1;
+                     if ( y % 16 == 0 || x % 16 == 0) val = 0;
+                    data[x + columnIndex] = (byte)(val * 255);
+                }
+            }

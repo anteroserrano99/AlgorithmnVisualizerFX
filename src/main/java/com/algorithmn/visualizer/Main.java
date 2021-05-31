@@ -30,16 +30,22 @@ public class Main extends Application {
 
 
                 // con po
-            for (int y = 0 ; y < height ; y++) {
-                for (int x = 0 ; x < width; x++) {
+            for (int y = 1 ; y < height ; y++) {
+                for (int x = 1 ; x < width; x++) {
+                    double val = 1;
+                    int index = x;
+                    if (x % 16 == 0) val =0;
+                    if (x == y *16 ){
+                        val = 0;
+                        for (int i = 0; i< 16; i++){
+                            data[x + y*height + i] = (byte)( val *255);
+                        }
+                        x +=16;
+                    } else
+                    data[x + y*height] = (byte)( val *255);
+                     }
 
-                    int columnIndex = (y * width);
-
-//                    double val = x % 2 == 0 && y % 2 == 0 ? 0 : 1;
-                    double val = x % 16 == 0 ? 0 : 1;
-                    data[x + columnIndex] = (byte)(val * 255);
                 }
-            }
 
 
 
@@ -65,7 +71,7 @@ public class Main extends Application {
 
             ImageView imageView = new ImageView();
             //todo Ratio Preservation can create interesting images iif the size of the image is less than the stage image
-//            imageView.setPreserveRatio(true);
+            imageView.setPreserveRatio(true);
             imageView.setImage(img);
 
 
