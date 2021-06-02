@@ -23,14 +23,15 @@ public class OneBufferPerColumnTest extends Application {
 
     public static final int HEIGHT = 800;
     public static final int WIDTH = 1600;
+    public static final int COLUMN_NUMBER = WIDTH / COLUMN_WIDTH;
 
     @Override
         public void start(Stage stage) {
 
-            int columnWidth = WIDTH / COLUMN_WIDTH;
             int maxNumbers =  HEIGHT / PIXEL_HEIGHT;
+            int columnBufferSize = COLUMN_NUMBER * HEIGHT;
 
-            byte[] data = new byte[columnWidth* HEIGHT];
+            byte[] data = new byte[WIDTH* HEIGHT];
 
 //            int contador;
 
@@ -42,24 +43,11 @@ public class OneBufferPerColumnTest extends Application {
             Collections.shuffle(randomNumbers);
 
             for (int bufferIndex = 0; bufferIndex< maxNumbers; bufferIndex++){
+
                 int currentNumber = randomNumbers.get(bufferIndex)*16;
-                byte[] currentBuffer = new byte[columnWidth* HEIGHT];
+                byte[] currentBuffer =setValueBuffer(currentNumber, columnBufferSize);
 
-
-                for (int y =0; y < HEIGHT; y++){
-
-                    for (int x = 0; x < columnWidth; x++){
-                        double val = 1;
-
-                        if (y >= currentNumber){
-                            val = 0;
-                        }
-
-                        currentBuffer[x + y * columnWidth] = (byte) (val * 255);
-                    }
-
-                }
-
+//                byte [] convertedBuffer = convertBufferDataIntoARBG(currentBuffer);
                 buffers.add(currentBuffer);
 
             }
@@ -67,33 +55,6 @@ public class OneBufferPerColumnTest extends Application {
 
 
         data = buffers.get(0);
-//
-//
-//            for (int y = 1 ; y < height ; y++) {
-//                contador = 0;
-//                for (int x = 1 ; x < width; x++) {
-//                    double val = 1;
-//
-//                    int currentNumber = randomNumbers.get(contador)*16;
-//                    if (x % 16 == 0){
-//                        val =0;
-//                        contador++;
-//                    }
-//
-//                    if (y == currentNumber && x == contador * 16){
-//                        val = 0;
-//                        for (int i = 0; i< 16; i++){
-//                            data[x + y*height + i] = (byte)( val *255);
-//                        }
-//                        contador++;
-//                        x +=16;
-//                    } else
-//                    data[x + y*height] = (byte)( val *255);
-//                     }
-//
-//
-//                }
-
 
 
 
@@ -112,7 +73,7 @@ public class OneBufferPerColumnTest extends Application {
             //buffer image to our WritableImage
             ByteBuffer buffer = ByteBuffer.wrap(convertedData);
 
-            WritableImage img = new WritableImage(new PixelBuffer<ByteBuffer>(columnWidth, HEIGHT, buffer, format));
+            WritableImage img = new WritableImage(new PixelBuffer<ByteBuffer>(COLUMN_NUMBER, HEIGHT, buffer, format));
 
 
             ImageView imageView = new ImageView();
@@ -125,10 +86,36 @@ public class OneBufferPerColumnTest extends Application {
             BorderPane root = new BorderPane(imageView);
             imageView.fitWidthProperty().bind(root.widthProperty());
             imageView.fitHeightProperty().bind(root.heightProperty());
-            Scene scene = new Scene(root, columnWidth, HEIGHT);
+            Scene scene = new Scene(root, COLUMN_NUMBER, HEIGHT);
             stage.setScene(scene);
             stage.show();
         }
+
+
+
+    public byte [] setValueBuffer(int currentNumber, int currentBufferSize){
+
+        byte [] currentBuffer = new byte[currentBufferSize];
+
+            for (int y =0; y < HEIGHT; y++){
+
+                for (int x = 0; x < COLUMN_NUMBER; x++){
+                    double val = 1;
+
+                    if (y >= currentNumber){
+                        val = 0;
+                    }
+
+                    currentBuffer[x + y * COLUMN_NUMBER] = (byte) (val * 255);
+                }
+
+            }
+            return currentBuffer;
+        }
+
+//    private byte[] convertBufferDataIntoARBG(byte[] currentBuffer) {
+//    }
+
 
 
     public static void main(String[] args) {
