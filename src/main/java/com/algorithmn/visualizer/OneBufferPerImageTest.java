@@ -15,35 +15,54 @@ import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
-public class Main extends Application {
+public class OneBufferPerImageTest extends Application {
 
 
 
         @Override
         public void start(Stage stage) {
-            int width = 1000;
-            int height = 1000;
+            int width = 1600;
+            int height = 1600;
             byte[] data = new byte[width*height];
 
+            int contador = 1;
+            int maxNumbers =  height /16;
 
+            List<Integer> randomNumbers =  new ArrayList<>();
+            for (int i= 1; i<=maxNumbers+1;i++){
+                randomNumbers.add(i);
+            }
+
+            Collections.shuffle(randomNumbers);
 
                 // con po
             for (int y = 1 ; y < height ; y++) {
+                contador = 0;
                 for (int x = 1 ; x < width; x++) {
                     double val = 1;
-                    int index = x;
-                    if (x % 16 == 0) val =0;
-                    if (x == y *16 ){
+
+                    int currentNumber = randomNumbers.get(contador)*16;
+                    if (x % 16 == 0){
+                        val =0;
+                        contador++;
+                    }
+
+                    if (y == currentNumber && x == contador * 16){
                         val = 0;
                         for (int i = 0; i< 16; i++){
                             data[x + y*height + i] = (byte)( val *255);
                         }
+                        contador++;
                         x +=16;
                     } else
                     data[x + y*height] = (byte)( val *255);
                      }
+
 
                 }
 
@@ -71,14 +90,14 @@ public class Main extends Application {
 
             ImageView imageView = new ImageView();
             //todo Ratio Preservation can create interesting images iif the size of the image is less than the stage image
-            imageView.setPreserveRatio(true);
+//            imageView.setPreserveRatio(true);
             imageView.setImage(img);
 
 
             BorderPane root = new BorderPane(imageView);
             imageView.fitWidthProperty().bind(root.widthProperty());
             imageView.fitHeightProperty().bind(root.heightProperty());
-            Scene scene = new Scene(root, 500, 500);
+            Scene scene = new Scene(root, 1600, 1600);
             stage.setScene(scene);
             stage.show();
         }
