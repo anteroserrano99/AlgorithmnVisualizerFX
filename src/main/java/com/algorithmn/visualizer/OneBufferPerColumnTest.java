@@ -45,30 +45,21 @@ public class OneBufferPerColumnTest extends Application {
             for (int bufferIndex = 0; bufferIndex< maxNumbers; bufferIndex++){
 
                 int currentNumber = randomNumbers.get(bufferIndex)*16;
-                byte[] currentBuffer =setValueBuffer(currentNumber, columnBufferSize);
 
-//                byte [] convertedBuffer = convertBufferDataIntoARBG(currentBuffer);
-                buffers.add(currentBuffer);
+                byte [] currentBuffer =setValueBuffer(currentNumber, columnBufferSize);
+                //TODO IMPROVE THIS TO AVOID REITERATING OVER ALL THE PIXELS * 4
+                byte [] convertedBuffer = convertBufferDataIntoARBG(currentBuffer);
+
+                buffers.add(convertedBuffer);
 
             }
 
 
-
-        data = buffers.get(0);
-
+            byte [] convertedData = buffers.get(0);
 
 
             //This byte is the opacity parameter, is set to full it goes from 0x00 to 0xff it determinates de opacity of the color
             PixelFormat<ByteBuffer> format = PixelFormat.getByteBgraPreInstance();
-            byte alpha = (byte) 0xff ;
-
-            // this is a parser to convert our byte buffer to format RBGA, because we have to transfer our 1 dimensional array to 4 values.
-            //TODO improve to do the value conversion in a single iteration.
-            byte[] convertedData = new byte[4*data.length];
-            for (int i = 0 ; i < data.length ; i++) {
-                convertedData[4*i] = convertedData[4*i+1] = convertedData[4*i+2] = data[i] ;
-                convertedData[4*i+3] = alpha ;
-            }
 
             //buffer image to our WritableImage
             ByteBuffer buffer = ByteBuffer.wrap(convertedData);
@@ -113,8 +104,20 @@ public class OneBufferPerColumnTest extends Application {
             return currentBuffer;
         }
 
-//    private byte[] convertBufferDataIntoARBG(byte[] currentBuffer) {
-//    }
+    private byte[] convertBufferDataIntoARBG(byte[] currentBuffer) {
+        byte alpha = (byte) 0xff ;
+
+        // this is a parser to convert our byte buffer to format RBGA, because we have to transfer our 1 dimensional array to 4 values.
+        //TODO improve to do the value conversion in a single iteration.
+        byte[] convertedData = new byte[4*currentBuffer.length];
+        for (int i = 0 ; i < currentBuffer.length ; i++) {
+            convertedData[4*i] = convertedData[4*i+1] = convertedData[4*i+2] = currentBuffer[i] ;
+            convertedData[4*i+3] = alpha ;
+        }
+
+        return convertedData;
+
+    }
 
 
 
